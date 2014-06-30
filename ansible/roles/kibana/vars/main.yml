@@ -1,0 +1,5 @@
+# role default variables
+
+image: "myself/kibana"
+container_name: kibana
+es_container: elasticsearch

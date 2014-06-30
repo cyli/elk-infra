@@ -1,0 +1,23 @@
+---
+# playbook for installing kibana served by nginx
+
+- name: sync kibana docker file
+  synchronize: src=../../../../docker/kibana dest=/tmp
+  tags: kibana
+
+# this may take a long time - if not async, this could time out and the whole
+# provisioning fail, so poll
+- name: check or build kibana image
+  docker_image: "path=/tmp/kibana name={{ image }} state=present"
+  async: 600
+  poll: 5
+  tags: kibana
+
+- name: set up upstart configuration for kibana
+  template: src=kibana.conf dest=/etc/init/kibana.conf
+  notify:
+    - restart kibana
+  tags: kibana
+
+- service: name=kibana state=started enabled=yes
+  tags: kibana

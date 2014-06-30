@@ -1,0 +1,21 @@
+---
+- name: ensure that the data directory exists
+  file: "path={{ data_dir | mandatory }} state=directory"
+  tags: elasticsearch
+
+- name: copy over the elasticsearch config
+  copy: "src=elasticsearch.yml dest={{ data_dir }}/elasticsearch.yml"
+  tags: elasticsearch
+
+- name: set up upstart configuration for elasticsearch
+  template: src=elasticsearch.conf dest=/etc/init/elasticsearch.conf
+  notify:
+    - restart elasticsearch
+  tags: elasticsearch
+
+- service: name=elasticsearch state=started enabled=yes
+  tags: elasticsearch
+
+- name: ensure that elasticsearch is running
+  wait_for: port=9200 delay=5 timeout=600
+  tags: elasticsearch

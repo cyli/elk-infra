@@ -1,0 +1,9 @@
+---
+- name: restart elasticsearch
+  command: service elasticsearch restart
+  register: command_result
+  ignore_errors: yes
+
+- name: fail restart only if not a stop error
+  fail: command_result.stderr
+  when: "'stop:' not in command.sderr"

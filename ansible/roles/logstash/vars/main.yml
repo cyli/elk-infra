@@ -1,0 +1,5 @@
+# role default variables
+
+image: myself/logstash
+container_name: logstash
+es_container: elasticsearch

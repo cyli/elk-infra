@@ -1,0 +1,23 @@
+---
+# playbook for installing logstash container
+
+- name: sync logstash docker file
+  synchronize: src=../../../../docker/logstash dest=/tmp
+  tags: logstash
+
+# this may take a long time - if not async, this could time out and the whole
+# provisioning fail, so poll
+- name: check or build logstash image
+  docker_image: "path=/tmp/logstash name={{ image }} state=present"
+  async: 600
+  poll: 5
+  tags: logstash
+
+- name: set up upstart configuration for logstash
+  template: src=logstash.conf dest=/etc/init/logstash.conf
+  notify:
+    - restart logstash
+  tags: logstash
+
+- service: name=logstash state=started enabled=yes
+  tags: logstash

@@ -1,0 +1,14 @@
+---
+- hosts: all
+
+  pre_tasks:
+  - name: make sure docker is running
+    service: name=docker state=running
+
+  - name: make sure docker-py is installed
+    pip: name=docker-py version=0.3.1
+
+  roles:
+  - { role: elasticsearch, data_dir: '/opt/dockers/es' }
+  - { role: logstash }
+  - { role: kibana }
